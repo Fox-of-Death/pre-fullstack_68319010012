@@ -47,8 +47,8 @@ exports.createStudent = async (req, res) => {
 };
 
 exports.updateStudent = async (req, res) => {
+    const id = Number(req.params.id)
     try {
-        const id = Number(req.params.id)
         const { name, age, major } = req.body;
         if (!name || !age || !major) {
             return res.status(400).json({ message: 'Please Field Information' });
@@ -58,10 +58,19 @@ exports.updateStudent = async (req, res) => {
         });
         res.status(200).json(updateStudent);
     } catch {
-        res.status(404).json({ message: 'Student not found' });
+        res.status(404).json({ message: `ไม่พบนักศึกษารหัส ${id}` })
     }
 };
 
 exports.deleteStudent = async (req, res) => {
-    
-}
+    const id = Number(req.params.id)
+    try {
+        const deleteStudent = await prisma.student.delete({
+            where: { id }
+        })
+
+        res.status(200).json({ deleteStudent, message: `ลบนักศึกษารหัส ${id} สำเร็จ` })
+    } catch {
+        res.status(404).json({ message: `ไม่พบนักศึกษารหัส ${id}` })
+    }
+};
